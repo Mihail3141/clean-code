@@ -1,14 +1,16 @@
-﻿namespace Markdown;
+﻿using System.Text;
+
+namespace Markdown;
 
 public interface IRenderer
 {
-    string Render(IEnumerable<LineNode> lineNodes);
+    string Render(IEnumerable<Node> lineNodes);
 }
 
 public class HtmlRenderer : IRenderer
 {
-    public string Render(IEnumerable<LineNode> lineNodes)
+    public string Render(IEnumerable<Node> lines)
     {
-        return string.Empty;
+        throw new NotImplementedException();
     }
 }

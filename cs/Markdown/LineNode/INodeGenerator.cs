@@ -2,7 +2,7 @@
 
 namespace Markdown;
 
-public interface IParser
+public interface INodeGenerator
 {
-    IReadOnlyList<LineNode> Parse(IEnumerable<Token> tokens);
+    IEnumerable<Node> Create(IEnumerable<Token> tokens);
 }
