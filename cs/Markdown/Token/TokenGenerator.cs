@@ -2,11 +2,10 @@
 
 namespace Markdown;
 
-public class TokenProcessor : ITokenProcessor
+public class TokenGenerator : ITokenGenerator
 {
     private readonly List<ITokenRule> rules = new()
     {
-        // Порядок важен: сначала более специфичные
         new NewLineRule(),
         new EscapeRule(),
         new HeaderRule(),

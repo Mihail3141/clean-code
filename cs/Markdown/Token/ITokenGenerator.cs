@@ -1,6 +1,6 @@
 ﻿namespace Markdown;
 
-public interface ITokenProcessor
+public interface ITokenGenerator
 {
     IEnumerable<Token?> Tokenize(string input);
 }

@@ -5,6 +5,7 @@ namespace Markdown;
 public class Token
 {
     public TokenType Type;
-    public string Info;
-    public int Pos;
+    public required string Value { get; init; }
+    public int StartPos { get; init; }
+    public int EndPos => StartPos + Value.Length;
 }
