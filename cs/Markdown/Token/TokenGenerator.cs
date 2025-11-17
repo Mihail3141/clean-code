@@ -7,27 +7,32 @@ public class TokenGenerator : ITokenGenerator
     private readonly List<ITokenRule> rules = new()
     {
         new NewLineRule(),
+        new WhiteSpaceRule(),
         new EscapeRule(),
         new HeaderRule(),
         new UnderscoreRule(),
-        new TextRunRule()
+        new TextRunRule(),
+        new DigitRule()
     };
 
-    public IEnumerable<Token?> Tokenize(string input)
+    public List<Token> Tokenize(string text)
     {
-        if (string.IsNullOrEmpty(input))
-            yield break;
+        if (string.IsNullOrEmpty(text))
+            return null;
+        var tokens = new List<Token>();
         //todo: подумать про строку из пробелов - IsNullOfWhitespace
 
-        var cursor = new InputCursor(input);
+        var cursor = new TextCursor(text);
         while (!cursor.End)
         {
-            var isLineStart = true;
-            yield return TryCreateToken(cursor);
+            var token = TryCreateToken(cursor);
+            tokens.Add(token);
         }
+        tokens.Add(TokenFactory.Create(TokenType.EndOfText, null, text.Length));
+        return tokens;
     }
 
-    private Token? TryCreateToken(InputCursor cursor)
+    private Token? TryCreateToken(TextCursor cursor)
     {
         Token? token = null;
         foreach (var rule in rules)

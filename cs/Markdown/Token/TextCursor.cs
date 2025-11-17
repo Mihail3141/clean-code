@@ -2,14 +2,14 @@
 
 namespace Markdown;
 
-public class InputCursor
+public class TextCursor
 {
     private readonly string input;
     public int Position { get; private set; }
     public int Length => input.Length;
     public bool End => Position >= input.Length;
 
-    public InputCursor(string input)
+    public TextCursor(string input)
     {
         this.input = input ?? string.Empty;
         Position = 0;

@@ -2,5 +2,5 @@
 
 public interface ITokenGenerator
 {
-    IEnumerable<Token?> Tokenize(string input);
+    List<Token> Tokenize(string text);
 }

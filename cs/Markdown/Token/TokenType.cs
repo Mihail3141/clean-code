@@ -7,5 +7,7 @@ public enum TokenType
     DoubleUnderscore,
     HeaderMarker,
     NewLine,
-    Escape 
+    Escape,
+    EndOfText,
+    WhiteSpace
 }
