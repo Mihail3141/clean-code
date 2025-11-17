@@ -2,9 +2,8 @@
 
 public class DigitRule : ITokenRule
 {
-    public Token? TryReadTokenAndMoveCursor(InputCursor cursor)
+    public Token? TryReadTokenAndMoveCursor(TextCursor cursor)
     {
-        // Старт не цифра — токена нет
         if (!char.IsDigit(cursor.Current) || cursor.End)
             return null;
         

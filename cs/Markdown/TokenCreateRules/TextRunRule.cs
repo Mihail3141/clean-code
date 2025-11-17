@@ -2,7 +2,7 @@
 
 public sealed class TextRunRule : ITokenRule
 {
-    public Token TryReadTokenAndMoveCursor(InputCursor cursor)
+    public Token TryReadTokenAndMoveCursor(TextCursor cursor)
     {
         if (cursor.End ||
             cursor.Current == '_'  ||

@@ -2,7 +2,7 @@
 
 public sealed class UnderscoreRule : ITokenRule
 {
-    public Token TryReadTokenAndMoveCursor(InputCursor cursor)
+    public Token TryReadTokenAndMoveCursor(TextCursor cursor)
     {
         if (cursor.End) return null;
         if (cursor.Current != '_') return null;
@@ -19,7 +19,6 @@ public sealed class UnderscoreRule : ITokenRule
         if (count >= 2)
         {
             cursor.Revert(pos + 2);
-            // cursor.Move(2);
             return TokenFactory.Create(TokenType.DoubleUnderscore, "__", pos);
         }
 

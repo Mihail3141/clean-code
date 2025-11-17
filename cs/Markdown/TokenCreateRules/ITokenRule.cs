@@ -2,5 +2,5 @@
 
 public interface ITokenRule
 {
-    Token? TryReadTokenAndMoveCursor(InputCursor cursor);
+    Token? TryReadTokenAndMoveCursor(TextCursor cursor);
 }

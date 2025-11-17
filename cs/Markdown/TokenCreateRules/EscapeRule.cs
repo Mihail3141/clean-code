@@ -2,7 +2,7 @@
 
 public sealed class EscapeRule : ITokenRule
 {
-    public Token? TryReadTokenAndMoveCursor(InputCursor cursor)
+    public Token? TryReadTokenAndMoveCursor(TextCursor cursor)
     {
         if (cursor.End) return null;
         if (cursor.Current != '\\') return null;
