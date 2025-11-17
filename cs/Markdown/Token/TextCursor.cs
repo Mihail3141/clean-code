@@ -28,16 +28,6 @@ public class InputCursor
         return idx >= 0 && idx < input.Length ? input[idx] : '\0';
     }
 
-    public bool StartsWith(string s)
-    {
-        if (s is null) return false;
-        if (Position + s.Length > input.Length) return false;
-        for (int i = 0; i < s.Length; i++)
-            if (input[Position + i] != s[i])
-                return false;
-        return true;
-    }
-
     public void Move(int count = 1) =>
         Position = Math.Min(Position + count, input.Length); //todo: подумать, может лучше trymove
 

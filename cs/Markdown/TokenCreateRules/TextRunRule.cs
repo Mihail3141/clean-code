@@ -4,19 +4,26 @@ public sealed class TextRunRule : ITokenRule
 {
     public Token TryReadTokenAndMoveCursor(InputCursor cursor)
     {
-        if (cursor.End) return null;
-
-        if (cursor.Current ==  '_' ||
+        if (cursor.End ||
+            cursor.Current == '_'  ||
             cursor.Current == '\n' ||
             cursor.Current == '\r' ||
-            cursor.Current == '\\')
+            cursor.Current == '\\' ||
+            cursor.Current == ' '  ||
+            char.IsDigit(cursor.Current))
             return null;
 
         var start = cursor.Position;
         while (!cursor.End)
         {
             var c = cursor.Current;
-            if (c == '_' || c == '\n' || c == '\r' || c == '\\') break;
+            if (c == '_' ||
+                c == '\n' ||
+                c == '\r' ||
+                c == '\\' ||
+                c == ' ' ||
+                char.IsDigit(c))
+                break;
             cursor.Move(1);
         }
 

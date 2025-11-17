@@ -19,7 +19,7 @@ public sealed class UnderscoreRule : ITokenRule
         if (count >= 2)
         {
             cursor.Revert(pos + 2);
-            cursor.Move(2);
+            // cursor.Move(2);
             return TokenFactory.Create(TokenType.DoubleUnderscore, "__", pos);
         }
 

@@ -4,5 +4,5 @@ namespace Markdown;
 
 public interface INodeGenerator
 {
-    IEnumerable<Node> Create(IEnumerable<Token> tokens);
+    List<Node> Create(List<Token> tokens);
 }
