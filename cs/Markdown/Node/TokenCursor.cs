@@ -17,8 +17,5 @@ public sealed class TokenCursor(List<Token> tokens)
             throw new IndexOutOfRangeException();
     }
 
-    public Token? TakeNext()
-    {
-        return Position + 1 < TokenCount ? tokens[Position + 1] : null;
-    }
+    public Token? TakeNext() => Position + 1 < TokenCount ? tokens[Position + 1] : null;
 }

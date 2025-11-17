@@ -55,6 +55,7 @@ public class NodeGenerator : INodeGenerator
                     break;
             }
         }
+        
         return children;
     }
 }
