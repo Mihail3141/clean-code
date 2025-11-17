@@ -8,112 +8,79 @@ public class RenderTest
 {
     private readonly Md md = new Md();
 
-    [Test]
-    public void Проверка_экранирования()
+
+    [TestCase("_курсив_", "<em>курсив</em>", TestName = "Просто курсив")]
+    [TestCase("__полужирный__", "<strong>полужирный</strong>", TestName = "Просто полужирный")]
+    [TestCase("_это просто текст_", "<em>это просто текст</em>", TestName = "Просто текст с курсивом")]
+    [TestCase("__a _b_ c__", "<strong>a <em>b</em> c</strong>", TestName = "Курсив внутри жирного должен работать")]
+    public void Проверка_ПравильногоВыделения(string text, string expected)
     {
-        var text = "\\_Вот это\\_";
         var html = md.Render(text);
-
-        html.Should().Be("_Вот это_");
+        html.Should().Be(expected);
     }
-    
-    [Test]
-    public void Курсив_внутри_жирного()
+
+    [TestCase("__неправильное выделение_", "__неправильное выделение_", TestName = "Разные символы выделения")]
+    [TestCase("_неправильное выделение__", "_неправильное выделение__", TestName = "Разные символы выделения")]
+    [TestCase("_a __b  b__ c_", "<em>a __b  b__ c</em>", TestName = "Жирный внутри курсива не должен работать")]
+    [TestCase("_ a_ bbb _a _", "_ a_ bbb _a _", TestName = "Неправильное прилипание не выделяет")]
+    [TestCase("__пересечения _двойных__ и одинарных_", "__пересечения _двойных__ и одинарных_", TestName = "Пересечение разных выделений")]
+    public void Проверка_НеправильногоВыделения(string text, string expected)
     {
-        var text = "__a _b_ c__";
         var html = md.Render(text);
-
-        html.Should().Be("<strong>a <em>b</em> c</strong>");
+        html.Should().Be(expected);
     }
-    
-    [Test]
-    public void Жирный_внутри_курсива()
+
+    [TestCase("текст c цифрами_12_3", "текст c цифрами_12_3", TestName = "Подчерки в тексте с цифрами")]
+    [TestCase("вну_три", "вну_три", TestName = "Подчерк внутри слова")]
+    [TestCase("в__нутр__и сл_о_ва", "в<strong>нутр</strong>и сл<em>о</em>ва",
+        TestName = "Выделение внутри слова работает")]
+    [TestCase("в __нач__але _сло_ва", "в <strong>нач</strong>але <em>сло</em>ва",
+        TestName = "Выделение в начале слова работает")]
+    [TestCase("в ко__нце__ сло_ва_", "в ко<strong>нце</strong> сло<em>ва</em>",
+        TestName = "Выделение в конце слова работает")]
+    [TestCase("в ра_зных сл_овах", "в ра_зных сл_овах", TestName = "Выделение в разных словах не работает")]
+    [TestCase("эти_ подчерки_ не считаются выделением", "эти_ подчерки_ не считаются выделением",
+        TestName = "Пробельный символ после подчерка")]
+    public void Выделение_внутри_слова(string text, string expected)
     {
-        var text = "_a __b__ c_";
         var html = md.Render(text);
-
-        html.Should().Be("<em>a __b__ c</em>");
+        html.Should().Be(expected);
     }
-    
-    [Test]
-    public void Неправильное_прилипание()
+
+
+    [TestCase("# Заголовок", "<h1>Заголовок</h1>", TestName = "Заголовок")]
+    [TestCase("# Заголовок\n_курсив_ и __жирный__ и вну_три",
+        "<h1>Заголовок</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три",
+        TestName = "Сохраняется_перенос_после_заголовка_и_инлайн_на_следующей_строке")]
+    [TestCase("# Заголовок1\n_курсив_ и __жирный__ и вну_три\n# Заголовок2\nкапибара",
+        "<h1>Заголовок1</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три\n<h1>Заголовок2</h1>\nкапибара",
+        TestName = "Несколько заголовков в одном тексте")]
+    [TestCase("# Заголовок\nпросто текст",
+        "<h1>Заголовок</h1>\nпросто текст",
+        TestName = "Заголовок и перенос строки")]
+    [TestCase("# Это заголовок c # внутри", "<h1>Это заголовок c # внутри</h1>", TestName = "Решётка внутри заголовка")]
+    public void ВерныйЗаголовок(string text, string expected)
     {
-        var text = "_ a_ bbb _a _";
         var html = md.Render(text);
-
-        html.Should().Be("_ a_ bbb _a _");
+        html.Should().Be(expected);
     }
-    
-    [Test]
-    public void Renders_Strong_With_Double_Underscore()
+
+    [TestCase("#Это не заголовок", "#Это не заголовок", TestName = "Нет пробела после #")]
+    [TestCase("Это # не заголовок", "Это # не заголовок", TestName = "# внутри текста не заголовок")]
+    [TestCase("Это не заголовок #", "Это не заголовок #", TestName = "# после текста не заголовок")]
+    public void НеверныйЗаголовок(string text, string expected)
     {
-        var text = "Это __жирный__ текст";
         var html = md.Render(text);
-
-        html.Should().Be("Это <strong>жирный</strong> текст");
+        html.Should().Be(expected);
     }
 
-    [Test]
-    public void Renders_Emphasis_With_Single_Underscore_When_Not_Inside_Word()
+
+    [TestCase("\\_это не работает_", "_это не работает_", TestName = "1111")]
+    [TestCase("\\\\_это работает_", "\\<em>это работает</em>",
+        TestName = "111")]
+    public void Экранирование(string text, string expected)
     {
-        var text = "Текст, _окруженный с двух сторон_ одинарными символами подчерка";
         var html = md.Render(text);
-
-        html.Should().Be("Текст, <em>окруженный с двух сторон</em> одинарными символами подчерка");
-    }
-
-    [Test]
-    public void Does_Not_Emphasize_Single_Underscore_Inside_Word()
-    {
-        var text = "вну_три";
-        var html = md.Render(text);
-
-        html.Should().Be("вну_три");
-    }
-
-    [Test]
-    public void Renders_Header_H1_For_Line_Starting_With_Hash_Space()
-    {
-        var text = "# Заголовок";
-        var html = md.Render(text);
-
-        html.Should().Be("<h1>Заголовок</h1>");
-    }
-
-    [Test]
-    public void Keeps_Newline_After_Header_And_Renders_Inline_Text_On_Next_Line()
-    {
-        var text = "# Заголовок\n_курсив_ и __жирный__ и вну_три";
-        var html = md.Render(text);
-
-        html.Should().Be("<h1>Заголовок</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три");
-    }
-
-    [Test]
-    public void Supports_Multiple_Headers_In_One_Text()
-    {
-        var text = "# Заголовок1\n_курсив_ и __жирный__ и вну_три\n# Заголовок2\nкапибара";
-        var html = md.Render(text);
-
-        html.Should()
-            .Be(
-                "<h1>Заголовок1</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три\n<h1>Заголовок2</h1>\nкапибара");
-    }
-
-    public static IEnumerable<object[]> StrongCases()
-    {
-        yield return new object[] { "__a__", "<strong>a</strong>" };
-        yield return new object[] { "____", "<strong></strong><strong></strong>" };
-        yield return
-            new object[] { "___a__", "<strong>_a</strong>" }; // одинарное останется как текст
-    }
-
-
-    public static IEnumerable<object[]> EmphasisCases()
-    {
-        yield return new object[] { "_a_", "<em>a</em>" };
-        yield return new object[] { "a_b", "a_b" }; // внутри слова не срабатывает
-        yield return
-            new object[] { "_ a_", "_ a_" }; // открывающее слитно с пробелом — остаётся как текст
+        html.Should().Be(expected);
     }
 }

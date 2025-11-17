@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace Markdown;
+﻿namespace Markdown;
 
 public interface INodeGenerator
 {
-    List<Node> Create(List<Token> tokens);
+    public List<Node> Create(List<Token> tokens);
 }

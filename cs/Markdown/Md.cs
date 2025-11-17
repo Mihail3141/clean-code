@@ -1,16 +1,11 @@
-﻿using System.Text;
-
-namespace Markdown;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace Markdown;
 
 public class Md
 {
     private readonly TokenGenerator tokenGenerator;
     private readonly NodeGenerator nodeGenerator;
     private readonly HtmlRenderer htmlRenderer;
+
     public Md()
     {
         tokenGenerator = new TokenGenerator();
