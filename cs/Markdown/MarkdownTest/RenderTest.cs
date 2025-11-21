@@ -6,14 +6,14 @@ namespace MarkdownTest;
 
 public class RenderTest
 {
-    private readonly Md md = new Md();
+    private readonly Md md = new();
 
 
     [TestCase("_курсив_", "<em>курсив</em>", TestName = "Просто курсив")]
     [TestCase("__полужирный__", "<strong>полужирный</strong>", TestName = "Просто полужирный")]
     [TestCase("_это просто текст_", "<em>это просто текст</em>", TestName = "Просто текст с курсивом")]
     [TestCase("__a _b_ c__", "<strong>a <em>b</em> c</strong>", TestName = "Курсив внутри полужирного должен работать")]
-    public void Проверка_ПравильногоВыделения(string text, string expected)
+    public void Render_ShouldApplySimpleEmphasisAndStrong_WhenBasicMarkdownUsed(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -27,7 +27,7 @@ public class RenderTest
         TestName = "Пересечение разных выделений")]
     [TestCase("_пересечение __одинарных_ и двойных__", "_пересечение __одинарных_ и двойных__",
         TestName = "Пересечение разных выделений")]
-    public void Проверка_НеправильногоВыделения(string text, string expected)
+    public void Render_ShouldSkipIncorrectOrIntersectedTags_WhenWrongMarkdownUsed(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -44,14 +44,14 @@ public class RenderTest
     [TestCase("в ра_зных сл_овах", "в ра_зных сл_овах", TestName = "Выделение в разных словах не работает")]
     [TestCase("эти_ подчерки_ не считаются выделением", "эти_ подчерки_ не считаются выделением",
         TestName = "Пробельный символ после подчерка")]
-    public void Выделение_внутри_слова(string text, string expected)
+    public void Render_ShouldHandleEmphasisInsideWordsCorrectly_WhenInsideWordsAndBordersPresent(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
     }
     
     [TestCase("_____", "_____", TestName = "Подряд идущие подчёркивания")]
-    public void ПростоПодчёркивания(string text, string expected)
+    public void Render_ShouldOutputPlainUnderscores_WhenContinuousUnderscoresGiven(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -59,8 +59,8 @@ public class RenderTest
 
 
     [TestCase("# Заголовок", "<h1>Заголовок</h1>", TestName = "Заголовок")]
-    [TestCase("# Заголовок\n_курсив_ и __жирный__ и вну_три",
-        "<h1>Заголовок</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три",
+    [TestCase("# Заголовок\n_курсив_ и __жирный__",
+        "<h1>Заголовок</h1>\n<em>курсив</em> и <strong>жирный</strong>",
         TestName = "Сохраняется_перенос_после_заголовка_и_инлайн_на_следующей_строке")]
     [TestCase("# Заголовок1\n_курсив_ и __жирный__ и вну_три\n# Заголовок2\nкапибара",
         "<h1>Заголовок1</h1>\n<em>курсив</em> и <strong>жирный</strong> и вну_три\n<h1>Заголовок2</h1>\nкапибара",
@@ -69,7 +69,7 @@ public class RenderTest
         "<h1>Заголовок</h1>\nпросто текст",
         TestName = "Заголовок и перенос строки")]
     [TestCase("# Это заголовок c # внутри", "<h1>Это заголовок c # внутри</h1>", TestName = "Решётка внутри заголовка")]
-    public void ВерныйЗаголовок(string text, string expected)
+    public void Render_ShouldProduceHeadersCorrectly_WhenValidHeaderMarkdownProvided(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -78,7 +78,7 @@ public class RenderTest
     [TestCase("#Это не заголовок", "#Это не заголовок", TestName = "Нет пробела после #")]
     [TestCase("Это # не заголовок", "Это # не заголовок", TestName = "# внутри текста не заголовок")]
     [TestCase("Это не заголовок #", "Это не заголовок #", TestName = "# после текста не заголовок")]
-    public void НеверныйЗаголовок(string text, string expected)
+    public void Render_ShouldNotProduceHeaders_WhenHeaderMarkdownIsInvalid(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -89,7 +89,7 @@ public class RenderTest
     [TestCase(@"\# Заголовок", "# Заголовок", TestName = "Экранирование заголовка")]
     [TestCase(@"\\_это работает_", @"\<em>это работает</em>", TestName = "Экранирование экранирования")]
     [TestCase(@"_это не\_ работает_", "<em>это не_ работает</em>", TestName = "Экранирование внутри")]
-    public void Экранирование(string text, string expected)
+    public void Render_ShouldEscapeSpecialMarkdownCharacters_WhenEscapesPresent(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);
@@ -102,7 +102,7 @@ public class RenderTest
         "Несколько ссылок: <a href=\"https://a.ru\"</a> и <a href=\"http://b.com\"</a>",
         TestName = "Несколько ссылок распознаются")]
     [TestCase("Это не ссылка: .com", "Это не ссылка: .com", TestName = "Строка начинающаяся с точки com не считается ссылкой")]
-    public void ОбработкаСсылки(string text, string expected)
+    public void Render_ShouldRecognizeAndLinkifyUrls_WhenLinksArePresent(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);

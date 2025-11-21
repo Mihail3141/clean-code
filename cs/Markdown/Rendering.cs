@@ -13,12 +13,12 @@ public interface IRenderer
 
 public class HtmlRenderer : IRenderer
 {
-    public string Render(IEnumerable<Node> nodes)
+    public string Render(IEnumerable<Node>? nodes)
     {
         if (nodes == null) return string.Empty;
 
         var sb = new StringBuilder();
-        
+
         foreach (var node in nodes)
         {
             RenderNode(node, sb);
@@ -27,7 +27,7 @@ public class HtmlRenderer : IRenderer
         return sb.ToString();
     }
 
-    private static void RenderNode(Node node, StringBuilder sb)
+    private static void RenderNode(Node? node, StringBuilder sb)
     {
         if (node == null) return;
 
@@ -42,11 +42,8 @@ public class HtmlRenderer : IRenderer
 
             case NodeType.Strong:
                 sb.Append("<strong>");
-                if (node.Children != null)
-                    foreach (var child in node.Children)
-                        RenderNode(child, sb);
-                else
-                    sb.Append(node.Value);
+                foreach (var child in node.Children)
+                    RenderNode(child, sb);
                 sb.Append("</strong>");
                 break;
 
@@ -66,7 +63,7 @@ public class HtmlRenderer : IRenderer
 
             case NodeType.Text:
             default:
-                var text = WebUtility.HtmlEncode(node.Value ?? string.Empty);
+                var text = WebUtility.HtmlEncode(node.Value);
                 sb.Append(text);
                 if (node.Children != null && node.Children.Count > 0)
                     RenderInlineChildren(node.Children, sb);
@@ -74,11 +71,10 @@ public class HtmlRenderer : IRenderer
         }
     }
 
-    private static void RenderInlineChildren(List<Node> children, System.Text.StringBuilder sb)
+    private static void RenderInlineChildren(List<Node>? children, StringBuilder sb)
     {
         if (children == null || children.Count == 0) return;
 
-        // Соседние Plain можно слить ещё на этапе генерации; здесь просто обходим
         foreach (var child in children)
             RenderNode(child, sb);
     }
