@@ -35,4 +35,13 @@ public class TextCursor
 
     public string Slice(int start, int end)
         => input.Substring(start, Math.Max(0, end - start));
+    
+    public bool Matches(string text)
+    {
+        if (text == null || Position + text.Length > input.Length) 
+            return false;
+        
+        return !text.Where((t, i) => input[Position + i] != t).Any();
+    }
+
 }

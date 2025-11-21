@@ -35,6 +35,13 @@ public static class HandelProcessor
             tokenCursor.Move();
             return;
         }
+        
+        if (nextToken.Type is TokenType.DoubleUnderscore or TokenType.Underscore)
+        {
+            children.Add(NodeFactory.Create(NodeType.Text, currentToken.Value, null));
+            tokenCursor.Move();
+            return;
+        }
 
         var currentTokenType = currentToken.Type;
         var currentTokenPos = tokenCursor.Position;

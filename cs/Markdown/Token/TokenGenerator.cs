@@ -6,6 +6,7 @@ public class TokenGenerator : ITokenGenerator
 {
     private readonly List<ITokenRule> rules = new()
     {
+        new LinkRule(),
         new NewLineRule(),
         new WhiteSpaceRule(),
         new EscapeRule(),
@@ -20,7 +21,6 @@ public class TokenGenerator : ITokenGenerator
         if (string.IsNullOrEmpty(text))
             return null;
         var tokens = new List<Token>();
-        //todo: подумать про строку из пробелов - IsNullOfWhitespace
 
         var cursor = new TextCursor(text);
         while (!cursor.End)

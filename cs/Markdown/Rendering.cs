@@ -18,8 +18,7 @@ public class HtmlRenderer : IRenderer
         if (nodes == null) return string.Empty;
 
         var sb = new StringBuilder();
-
-        // Идём последовательно по узлам верхнего уровня
+        
         foreach (var node in nodes)
         {
             RenderNode(node, sb);
@@ -35,8 +34,6 @@ public class HtmlRenderer : IRenderer
         switch (node.Type)
         {
             case NodeType.Header:
-                // В соответствии с условием: абзац, начинающийся с "# ", -> <h1>...</h1>
-                // Дети содержат инлайны (Plain/Emphasis/Strong/Link)
                 sb.Append("<h1>");
                 foreach (var child in node.Children)
                     RenderNode(child, sb);
@@ -64,24 +61,13 @@ public class HtmlRenderer : IRenderer
                 break;
 
             case NodeType.Link:
-                // В данной постановке правила ссылок не описаны подробно.
-                // Предположим семантику: Value = href, Children = текст ссылки.
-                // Если Children пусты — рендерим сам href как текст.
-                var href = WebUtility.HtmlEncode(node.Value ?? string.Empty);
-                sb.Append("<a href=\"").Append(href).Append("\">");
-                if (node.Children != null && node.Children.Count > 0)
-                    RenderInlineChildren(node.Children, sb);
-                else
-                    sb.Append(href);
-                sb.Append("</a>");
+                sb.Append("<a href=\"").Append(node.Value).Append("\"</a>");
                 break;
 
             case NodeType.Text:
             default:
-                // Текстовые узлы: экранируем
                 var text = WebUtility.HtmlEncode(node.Value ?? string.Empty);
                 sb.Append(text);
-                // Если у Plain есть дети (на всякий случай) — тоже обойти
                 if (node.Children != null && node.Children.Count > 0)
                     RenderInlineChildren(node.Children, sb);
                 break;

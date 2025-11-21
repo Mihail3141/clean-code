@@ -9,5 +9,6 @@ public enum TokenType
     NewLine,
     Escape,
     EndOfText,
-    WhiteSpace
+    WhiteSpace,
+    Link
 }

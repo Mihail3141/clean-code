@@ -49,6 +49,13 @@ public class RenderTest
         var html = md.Render(text);
         html.Should().Be(expected);
     }
+    
+    [TestCase("_____", "_____", TestName = "Подряд идущие подчёркивания")]
+    public void ПростоПодчёркивания(string text, string expected)
+    {
+        var html = md.Render(text);
+        html.Should().Be(expected);
+    }
 
 
     [TestCase("# Заголовок", "<h1>Заголовок</h1>", TestName = "Заголовок")]
@@ -83,6 +90,19 @@ public class RenderTest
     [TestCase(@"\\_это работает_", @"\<em>это работает</em>", TestName = "Экранирование экранирования")]
     [TestCase(@"_это не\_ работает_", "<em>это не_ работает</em>", TestName = "Экранирование внутри")]
     public void Экранирование(string text, string expected)
+    {
+        var html = md.Render(text);
+        html.Should().Be(expected);
+    }
+    
+    [TestCase("Ссылка: https://ulearn.me", "Ссылка: <a href=\"https://ulearn.me\"</a>", TestName = "https распознаётся, как ссылка")]
+    [TestCase("Ссылка: www.example.org", "Ссылка: <a href=\"www.example.org\"</a>", TestName = "www распознаётся, как ссылка")]
+    [TestCase("Ссылка: example.com", "Ссылка: <a href=\"example.com\"</a>", TestName = "example.com распознаётся_как_ссылка")]
+    [TestCase("Несколько ссылок: https://a.ru и http://b.com",
+        "Несколько ссылок: <a href=\"https://a.ru\"</a> и <a href=\"http://b.com\"</a>",
+        TestName = "Несколько ссылок распознаются")]
+    [TestCase("Это не ссылка: .com", "Это не ссылка: .com", TestName = "Строка начинающаяся с точки com не считается ссылкой")]
+    public void ОбработкаСсылки(string text, string expected)
     {
         var html = md.Render(text);
         html.Should().Be(expected);

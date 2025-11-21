@@ -44,6 +44,10 @@ public class NodeGenerator : INodeGenerator
                 case TokenType.Escape:
                     HandelProcessor.Escape(children, tokenCursor);
                     break;
+                case TokenType.Link:
+                    children.Add(NodeFactory.Create(NodeType.Link, tokenCursor.Current.Value, null));
+                    tokenCursor.Move();
+                    break;
                 case TokenType.NewLine:
                 case TokenType.EndOfText:
                 case TokenType.Text:
