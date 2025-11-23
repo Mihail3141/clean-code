@@ -10,7 +10,7 @@ public sealed class HeaderRule : ITokenRule
         {
             var currentPos = cursor.Position;
             cursor.Move(1);
-            return TokenFactory.Create(TokenType.HeaderMarker, "#", currentPos);
+            return TokenFactory.Create(TokenType.HeaderMarker, "#");
         }
         
         return null;

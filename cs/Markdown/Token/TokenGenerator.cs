@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace Markdown;
+﻿namespace Markdown;
 
 public class TokenGenerator : ITokenGenerator
 {
-    private readonly List<ITokenRule> rules = new()
-    {
+    private readonly List<ITokenRule> rules =
+    [
         new LinkRule(),
         new NewLineRule(),
         new WhiteSpaceRule(),
@@ -14,7 +12,7 @@ public class TokenGenerator : ITokenGenerator
         new UnderscoreRule(),
         new TextRunRule(),
         new DigitRule()
-    };
+    ];
 
     public List<Token> Tokenize(string text)
     {
@@ -28,7 +26,7 @@ public class TokenGenerator : ITokenGenerator
             var token = TryCreateToken(cursor);
             tokens.Add(token);
         }
-        tokens.Add(TokenFactory.Create(TokenType.EndOfText, null, text.Length));
+        tokens.Add(TokenFactory.Create(TokenType.EndOfText, null));
         return tokens;
     }
 

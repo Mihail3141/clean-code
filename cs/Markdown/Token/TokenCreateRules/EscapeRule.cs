@@ -13,9 +13,9 @@ public sealed class EscapeRule : ITokenRule
         {
             var s = cursor.Current.ToString();
             cursor.Move(1);
-            return TokenFactory.Create(TokenType.Text, s, pos);
+            return TokenFactory.Create(TokenType.Text, s);
         }
 
-        return TokenFactory.Create(TokenType.Text, "\\", pos);
+        return TokenFactory.Create(TokenType.Text, "\\");
     }
 }

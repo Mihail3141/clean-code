@@ -28,7 +28,7 @@ public sealed class TextRunRule : ITokenRule
         }
 
         if (cursor.Position > start)
-            return TokenFactory.Create(TokenType.Text, cursor.Slice(start, cursor.Position), start);
+            return TokenFactory.Create(TokenType.Text, cursor.Slice(start, cursor.Position));
 
         return null;
     }

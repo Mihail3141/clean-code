@@ -2,104 +2,71 @@
 
 public class LinkRule : ITokenRule
 {
-    private static readonly string[] ValidLinkPrefixes =
-    [
-        "http://",
-        "https://",
-        "www."
-    ];
-
     public Token? TryReadTokenAndMoveCursor(TextCursor cursor)
     {
-        if (cursor.End)
+        var linkStart = cursor.Position;
+        if (cursor.Current != '[')
             return null;
 
-        var start = cursor.Position;
-        
-        if (!IsLinkStart(cursor))
+        var linkTextEnd = FindChar(cursor, ']');
+        if (linkTextEnd == -1)
+            return null;
+        var linkText = cursor.Slice(linkStart + 1, linkTextEnd);
+        cursor.Move(1); 
+
+        var parenStart = cursor.Position;
+        if (cursor.Current != '(')
         {
-            cursor.Revert(start);
+            return TokenFactory.Create(TokenType.Text, cursor.Slice(linkStart, linkTextEnd + 1));
+        }
+
+        var urlEnd = FindChar(cursor, ')');
+        if (urlEnd == -1)
+        {
+            cursor.Revert(parenStart);
+            return TokenFactory.Create(TokenType.Text, cursor.Slice(linkStart, linkTextEnd + 1));
+        }
+
+        cursor.Revert(parenStart + 1);
+        if (!URL.ItsUrl(cursor))
+        {
+            cursor.Revert(linkStart);
             return null;
         }
-        
-        while (!cursor.End && IsLinkChar(cursor.Current))
-            cursor.Move();
 
-        var end = cursor.Position;
-        
-        var value = cursor.Slice(start, end);
+        var linkArgs = cursor.Slice(parenStart + 1, urlEnd); 
+        var url = linkArgs;
+        var title = "";
 
-        if (!IsValidLinkStart(value))
+        var titleStart = linkArgs.IndexOf('"');
+        if (titleStart != -1)
         {
-            cursor.Revert(start);
-            return null;
-        }
-
-        return TokenFactory.Create(TokenType.Link, value, start);
-    }
-
-    private static bool IsLinkStart(TextCursor cursor)
-    {
-        var mark = cursor.Position;
-        
-        if (ValidLinkPrefixes.Any(cursor.Matches))
-        {
-            cursor.Revert(mark);
-            return true;
-        }
-        
-        if (char.IsLetterOrDigit(cursor.Current))
-        {
-            var pos = cursor.Position;
-            var hasDot = false;
-
-            while (pos < cursor.Length && !char.IsWhiteSpace(cursor.Peek(pos - cursor.Position)))
+            url = linkArgs[..titleStart].Trim();
+            int titleEnd = linkArgs.LastIndexOf('"');
+            if (titleEnd > titleStart)
             {
-                if (cursor.Peek(pos - cursor.Position) == '.')
-                {
-                    hasDot = true;
-                    break;
-                }
-                pos++;
+                title = linkArgs.Substring(titleStart + 1, titleEnd - titleStart - 1);
             }
-
-            cursor.Revert(mark);
-            if (hasDot)
-                return true;
-        }
-        else
-        {
-            cursor.Revert(mark);
         }
 
-        return false;
+        if (title.Length > 0)
+            cursor.Move(title.Length + 3); 
+        cursor.Move(1); 
+
+        var tokenValue = $"{linkText}|{url}|{title}";
+        return TokenFactory.Create(TokenType.Link, tokenValue);
     }
 
-    private static bool IsLinkChar(char c)
+    private static int FindChar(TextCursor cursor, char targetChar)
     {
-        if (char.IsWhiteSpace(c))
-            return false;
-
-        switch (c)
+        while (!cursor.End)
         {
-            case ')':
-            case ']':
-            case '<':
-            case '>':
-            case '\"':
-                return false;
+            cursor.Move(1);
+            if (cursor.Current == targetChar)
+            {
+                return cursor.Position;
+            }
         }
-
-        return true;
+        return -1;
     }
-
-    private static bool IsValidLinkStart(string value)
-    {
-        if (ValidLinkPrefixes.Any(prefix => string.Equals(value, prefix, StringComparison.OrdinalIgnoreCase)))
-            return false;
-
-        var dotIndex = value.IndexOf('.');
-        return dotIndex > 0 && dotIndex != value.Length - 1;
-    }
-
 }

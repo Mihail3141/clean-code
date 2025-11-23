@@ -17,6 +17,6 @@ public sealed class WhiteSpaceRule : ITokenRule
         }
         
         var value = cursor.Slice(start, cursor.Position);
-        return TokenFactory.Create(TokenType.WhiteSpace,value, start);
+        return TokenFactory.Create(TokenType.WhiteSpace,value);
     }
 }

@@ -9,7 +9,7 @@ public sealed class NewLineRule : ITokenRule
         {
             var pos = cursor.Position;
             cursor.Move(1);
-            return TokenFactory.Create(TokenType.NewLine, "\n", pos);
+            return TokenFactory.Create(TokenType.NewLine, "\n");
         }
 
         if (cursor.Current == '\r')

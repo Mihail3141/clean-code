@@ -56,10 +56,21 @@ public class HtmlRenderer : IRenderer
                     sb.Append(node.Value);
                 sb.Append("</em>");
                 break;
-
+            
             case NodeType.Link:
-                sb.Append("<a href=\"").Append(node.Value).Append("\"</a>");
+                var parts = node.Value?.Split('|');
+                if (parts == null || parts.Length < 2) 
+                    return;
+
+                var linkText = WebUtility.HtmlEncode(parts[0]);
+                var url = WebUtility.HtmlEncode(parts[1]);
+                var title = (parts.Length > 2 && !string.IsNullOrWhiteSpace(parts[2]))
+                    ? $" title=\"{WebUtility.HtmlEncode(parts[2])}\""
+                    : "";
+
+                sb.Append($"<a href=\"{url}\"{title}>{linkText}</a>");
                 break;
+
 
             case NodeType.Text:
             default:
